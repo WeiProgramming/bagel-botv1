@@ -1,8 +1,12 @@
 import Discord, { Intents } from 'discord.js'
-import { SlashCommandBuilder } from '@discordjs/builders'
 import dotenv from 'dotenv'
 import axios from 'axios'
 dotenv.config()
+
+let serverInfo = {
+  serverId: '747321613342474341',
+  channeld: '833448582274351144',
+}
 
 var options = {
   method: 'GET',
@@ -27,12 +31,23 @@ const client = new Discord.Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 })
 
+const testFunc = (message) => {
+  let server = message.guild.id // ID of the guild the message was sent in
+  let channel = message.channel.id // ID of the channel the message was sent in
+  console.log('server id ', server)
+  console.log('channel id ', channel)
+}
+
 client.on('ready', () => {
   console.log(`WeiBot is Here`)
 })
 
 client.on('messageCreate', (msg) => {
-  if (msg.content.toLowerCase().includes('#dad')) {
+  testFunc(msg)
+  if (
+    msg.content.toLowerCase().includes('#dad') &&
+    msg.channel.id === serverInfo.channeld
+  ) {
     const res = getJoke()
     res.then((data) => {
       console.log('test data ', data.data.body[0])
@@ -46,6 +61,7 @@ client.on('messageCreate', (msg) => {
       }, 1000)
     })
   }
+  return
 })
 
 client.on('messageCreate', (msg) => {
