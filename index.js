@@ -1,7 +1,11 @@
 import Discord, { Intents } from 'discord.js'
 import dotenv from 'dotenv'
 import axios from 'axios'
+import fs from 'fs'
+import { commands } from './commands/commands.js'
 dotenv.config()
+
+const prefix = '-'
 
 let serverInfo = {
   serverId: '747321613342474341',
@@ -31,11 +35,17 @@ const client = new Discord.Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 })
 
+client.commands = new Discord.Collection()
+
 const testFunc = (message) => {
   let server = message.guild.id // ID of the guild the message was sent in
   let channel = message.channel.id // ID of the channel the message was sent in
-  console.log('server id ', server)
-  console.log('channel id ', channel)
+  // console.log('server id ', server)
+  // console.log('channel id ', channel)
+}
+
+for (const command in commands) {
+  client.commands.set(commands[command].name, commands[command])
 }
 
 client.on('ready', () => {
@@ -43,7 +53,6 @@ client.on('ready', () => {
 })
 
 client.on('messageCreate', (msg) => {
-  testFunc(msg)
   if (
     msg.content.toLowerCase().includes('#dad') &&
     msg.channel.id === serverInfo.channeld
@@ -65,23 +74,14 @@ client.on('messageCreate', (msg) => {
 })
 
 client.on('messageCreate', (msg) => {
-  if (msg.content.toLowerCase().includes('ping')) {
-    setTimeout(function () {
-      msg.reply({
-        content: 'pong',
-      })
-    }, 1000)
-  }
-})
+  if (!msg.content.startsWith(prefix) || msg.author.bot) return
 
-client.on('messageCreate', (msg) => {
-  if (msg.author.bot) return
-  if (msg.content.toUpperCase().includes('GEO')) {
-    setTimeout(function () {
-      msg.reply({
-        content: 'ALL HAIL GEO!!!!!!',
-      })
-    }, 1000)
+  const args = msg.content.slice(prefix.length).split(' ')
+  const command = args.shift().toLocaleLowerCase()
+  if (command === 'ping') {
+    client.commands.get('ping').execute(msg, args)
+  } else if (command.includes('geo')) {
+    msg.channel.send('ALL HAIL GEO!!!!!!')
   }
 })
 
