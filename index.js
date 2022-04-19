@@ -82,6 +82,8 @@ client.on('messageCreate', (msg) => {
     client.commands.get('ping').execute(msg, args)
   } else if (command.includes('geo')) {
     msg.channel.send('ALL HAIL GEO!!!!!!')
+  } else if (command.includes('lipa')) {
+    client.commands.get('lipa').execute(msg, args)
   }
 })
 
